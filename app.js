@@ -33,7 +33,7 @@ app.get('/', function(req, res){
     if(err){
       console.log(err);
     } else {
-      // The below will output the value of 'title' and the value in 'articles'
+      // The below will pass the values in 'title' and 'articles' into the index.pug file
       res.render('index', {
         title:'Articles',
         articles: articles
