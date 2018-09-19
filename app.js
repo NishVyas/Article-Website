@@ -1,9 +1,25 @@
-// The below brings in the Express module
+// The below brings in all the neccessary modules
 const express = require('express');
-// The below brings in the path module
 const path = require('path');
-// The below sets a variable to the express functions
 const app = express();
+const mongoose = require('mongoose');
+
+// The below allows us to connect to our database
+mongoose.connect('mongodb://localhost/nodekb');
+let db = mongoose.connection;
+
+// Check connection
+db.once('open', function(){
+  console.log('Connected to MongoDB');
+});
+
+// Check for database errors
+db.on('error', function(err){
+  console.log(err);
+});
+
+// Bring in the models pages (route for the models)
+let Article = require('./models/article');
 
 // The below loads the view engine
 app.set('views', path.join(__dirname, 'views'));
@@ -11,30 +27,18 @@ app.set('view engine', 'pug');
 
 // The below handles a GET request for the home page ('/') (The home route)
 app.get('/', function(req, res){
-  let articles = [
-    {
-      id:1,
-      title:'Article One',
-      author:'Nishant Vyas',
-      body:'This is article one'
-    },
-    {
-      id:2,
-      title:'Article Two',
-      author:'Noleen Prasad',
-      body:'This is article two'
-    },
-    {
-      id:3,
-      title:'Article Three',
-      author:'Chibesa Mumba',
-      body:'This is article three'
+  // The below is passing the 'articles' collection from the nodekb database (using the article.js file)
+  Article.find({}, function(err, articles){
+    // If there is an error, output the error, or else render the index page
+    if(err){
+      console.log(err);
+    } else {
+      // The below will output the value of 'title' and the value in 'articles'
+      res.render('index', {
+        title:'Articles',
+        articles: articles
+      });
     }
-  ];
-  // The below takes a RESponse and renders the value in the parentheses onto the browser
-  res.render('index', {
-    title:'Articles',
-    articles: articles
   });
 });
 
