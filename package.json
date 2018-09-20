@@ -9,6 +9,7 @@
   "author": "Brad Traversy",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "mongoose": "^5.2.15",
     "pug": "^2.0.3"
