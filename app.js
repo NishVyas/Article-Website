@@ -29,9 +29,11 @@ app.set('view engine', 'pug');
 // Middleware for body-parser
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
-
 // parse application/json
 app.use(bodyParser.json());
+
+// The below lets express know that we are using the 'public' folder as a astatic folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // The below handles a GET request for the home page ('/') (The home route)
 app.get('/', function(req, res){
@@ -47,6 +49,19 @@ app.get('/', function(req, res){
         articles: articles
       });
     }
+  });
+});
+
+// The below is for creating a route for getting single articles
+// The ':id' is a placeholder and can be anything
+app.get('/article/:id', function(req, res){
+  // We use 'Article' here since we are using the model (schema we created)
+  // To get id that is in the url when we click an article link, we use req.params.id
+  Article.findById(req.params.id, function(err, article){
+    // Upon clicking the specific article, it will render the 'article.pug' file
+    res.render('article', {
+      article:article
+    });
   });
 });
 
