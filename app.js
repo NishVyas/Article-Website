@@ -93,6 +93,56 @@ app.post('/articles/add', function(req, res){
   });
 });
 
+// The below is a route for loading the Edit form
+app.get('/article/edit/:id', function(req, res){
+  // We use 'Article' here since we are using the model (schema we created)
+  // To get id that is in the url when we click an article link, we use req.params.id
+  Article.findById(req.params.id, function(err, article){
+    // Upon clicking the 'Edit' button, it will render the 'article.pug' file
+    res.render('edit_article', {
+      title:'Edit Article',
+      article:article
+    });
+  });
+});
+
+// Update Submit POST route
+app.post('/articles/edit/:id', function(req, res){
+  // Below we create an empty object
+  let article = {};
+  // Now we get the form values from the /articles/edit page (edit_article.pug) and put it into the articles collection fields
+  article.title = req.body.title;
+  article.author = req.body.author;
+  article.body = req.body.body;
+  // Below we create a query where the '_id' is equal to the ':id' we requested from above
+  let query = {_id:req.params.id}
+
+  // Below we save these fields and update it into the collection (but we use the schema aka 'Article')
+  Article.update(query, article, function(err){
+    // If there is an error, output the error
+    if(err){
+      console.log(err);
+      return;
+      // If not, redirect to the home page
+    } else {
+      res.redirect('/');
+    }
+  });
+});
+
+// The below is a route for deleting articles
+app.delete('/article/:id', function(req, res){
+  // Below we create a query where the '_id' is equal to the ':id' we requested from above
+  let query = {_id:req.params.id}
+  // Then, using the 'Article' schema, we remove the article based on the query
+  Article.remove(query, function(err){
+    if(err){
+      console.log(err);
+    }
+    res.send('Success')
+  });
+});
+
 // The below sets a port on which to call localhost on in order to run our app on our browser
 app.listen(3000, function(){
   console.log('Server started on port 3000...');
