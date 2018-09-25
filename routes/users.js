@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const passport = require('passport');
 
 // Bring in the User model page
 let User = require('../models/user');
@@ -66,9 +67,28 @@ router.post('/register', function(req, res){
     });
   }
 });
-
+// Login Form
 router.get('/login', function(req, res){
   res.render('login');
+});
+
+// Login Process
+// Upon submitting the form during login, we will call a POST request
+router.post('/login', function(req, res, next){
+  // We call the authenticate method from passport and pass in our 'local' strategy we created
+  passport.authenticate('local', {
+    // If we succesfullt authenticate, we redirect to the home page, else we redirect to the login page with a flash message
+    successRedirect:'/',
+    failureRedirect:'/users/login',
+    failureFlash: true
+  })(req, res, next);
+});
+
+// Logout route
+router.get('/logout', function(req, res){
+  req.logout();
+  req.flash('success', 'You are logged out');
+  res.redirect('/users/login');
 });
 
 module.exports = router;

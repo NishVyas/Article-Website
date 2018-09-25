@@ -7,9 +7,11 @@ const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
+const passport = require('passport');
+const config = require('./config/database');
 
 // The below allows us to connect to our database
-mongoose.connect('mongodb://localhost/nodekb');
+mongoose.connect(config.database);
 let db = mongoose.connection;
 
 // Check connection
@@ -69,6 +71,20 @@ app.use(expressValidator({
     };
   }
 }));
+
+// Passport config
+require('./config/passport')(passport);
+// The below is just Passport Middleware copied from the passportjs.org website documentation
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Below we create a route for all urls and we want to enable a global user variable (the asterisk is for all routes)
+app.get('*', function(req, res, next){
+  // Below sets a global user variable which equals the req.user object if we are logged in
+  // We only set this if there actually is a request user object (hence the || null)
+  res.locals.user = req.user || null;
+  next();
+});
 
 // The below handles a GET request for the home page ('/') (The home route)
 app.get('/', function(req, res){
