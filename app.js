@@ -89,7 +89,9 @@ app.get('/', function(req, res){
 
 // Route Files
 let articles = require('./routes/articles');
+let users = require('./routes/users');
 app.use('/articles', articles);
+app.use('/users', users);
 
 // The below sets a port on which to call localhost on in order to run our app on our browser
 app.listen(3000, function(){
